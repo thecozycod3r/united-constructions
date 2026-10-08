@@ -122,6 +122,15 @@
       if (yearOut) yearOut.textContent = years[idx]?.textContent || "";
     };
     addEventListener("scroll", () => requestAnimationFrame(update), { passive: true });
+    // Keyboard users: tabbing into an off-screen card scrolls the page to the point where it is visible.
+    track.addEventListener("focusin", (e) => {
+      if (!mq.matches || reduced || !dist) return;
+      const item = e.target.closest(".tl-item");
+      const p = Math.min(1, Math.max(0, (item.offsetLeft - innerWidth * 0.25) / dist));
+      const top = tl.getBoundingClientRect().top + scrollY;
+      scrollTo({ top: top + (tl.offsetHeight - innerHeight) * p, behavior: "instant" });
+      tl.querySelector(".tl-sticky").scrollLeft = 0;
+    });
     addEventListener("resize", measure);
     mq.addEventListener("change", measure);
     addEventListener("load", measure);
